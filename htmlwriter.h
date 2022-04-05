@@ -11,7 +11,7 @@
 
 class HtmlWriter : public FileWriter
 {
-    const std::string file_name;
+    std::string file_name;
 public:
     HtmlWriter(const std::string& f_name);
 
