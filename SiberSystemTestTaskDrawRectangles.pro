@@ -11,6 +11,7 @@ SOURCES += \
         configfilereader.cpp \
         filereader.cpp \
         filewriter.cpp \
+        globals.cpp \
         htmlwriter.cpp \
         main.cpp
 
@@ -24,5 +25,6 @@ HEADERS += \
     exceptions.h \
     filereader.h \
     filewriter.h \
+    globals.h \
     htmlwriter.h \
     point.h

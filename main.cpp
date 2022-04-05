@@ -6,9 +6,13 @@
 #include <QDebug>
 
 #include <configfilereader.h>
+#include <htmlwriter.h>
 #include "exceptions.h"
+#include "globals.h"
 
-const QString defaultconfigFileName("config.txt");
+
+const QString defaultConfigFileName("config.txt");
+const QString defaultHtmlFileName("colored_rects.html");
 
 
 
@@ -40,7 +44,7 @@ void parseCommandLine(QCommandLineParser &parser, QVariantMap& configMap){
       parser.showHelp();
       return;
     }
-    configMap["ConfigFilePath"] = parser.isSet("p") ? parser.value("p") : (QCoreApplication::applicationDirPath() + "/" + defaultconfigFileName);
+    configMap["ConfigFilePath"] = parser.isSet("p") ? parser.value("p") : (QCoreApplication::applicationDirPath() + "/" + defaultConfigFileName);
     configMap["Color"] = parser.isSet("c") ? parser.value("c") : QString("blue");
     configMap["Grid"] = parser.isSet("g") ? QString("true") : QString("false");
 }
@@ -54,26 +58,21 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     QVariantMap cmdLineOptions;
     ConfigFileReader configFileReader;
+    HtmlWriter htmlWriter;
     try
     {
         parseCommandLine(parser, cmdLineOptions);
-        foreach (auto key, cmdLineOptions.keys()) {
-            std::cout << "Key is: " << key.toStdString() << " Value is: " << cmdLineOptions[key].toString().toStdString() << std::endl;
-            if(key == QString("ConfigFilePath"))
-            {
-                configFileReader.setFileName(cmdLineOptions[key].toString().toStdString());
-                configFileReader.read();
-                auto rects_points = configFileReader.getRectsPoints();
-                std::cout << "Points have been successfully read" << std::endl;
-                for(auto rect_points : rects_points)
-                {
-                    std::cout << "-------------Point start____________" << std::endl;
-                    std::cout << "Upper left coordinates: " << std::get<0>(rect_points).getX() << "; " << std::get<0>(rect_points).getY() << std::endl;
-                    std::cout << "Bottom right coordinates: " << std::get<1>(rect_points).getX() << "; " << std::get<1>(rect_points).getY() << std::endl;
-                    std::cout << "-------------Point end____________" << std::endl;
-                }
-            }
-        }
+        configFileReader.setFileName(cmdLineOptions["ConfigFilePath"].toString().toStdString());
+        configFileReader.read();
+        auto rects_points = configFileReader.getRectsPoints();
+        htmlWriter.setFileName(defaultHtmlFileName.toStdString());
+        htmlWriter.setRectsPoints(std::move(rects_points));
+        htmlWriter.setMaxX(configFileReader.getMaxX());
+        htmlWriter.setMaxY(configFileReader.getMaxY());
+        htmlWriter.setRectColor(cmdLineOptions["Color"].toString().toStdString());
+        htmlWriter.setShowGrid((cmdLineOptions["Grid"].toString().toStdString() == "true") ? true : false);
+        htmlWriter.write();
+
     }
     catch (std::exception &error) {
         std::cout << error.what() << std::endl;
