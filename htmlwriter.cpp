@@ -53,15 +53,15 @@ void HtmlWriter::write()
             *html_file_stream.get() << make_string_with_indent(current_string,indent_level);
             indent_level++;
             // table formation
-            current_string = "<table style=\"width: 100%;\"\n";
+            current_string = "<table style=\"width: 100%;\">\n";
             *html_file_stream.get() << make_string_with_indent(current_string,indent_level);
             indent_level++;
-            for(int i = 0; i < max_x; ++i) // rows
+            for(int i = 0; i < max_y; ++i) // rows
             {
                 current_string = "<tr>\n";
                 *html_file_stream.get() << make_string_with_indent(current_string,indent_level);
                 indent_level++;
-                for(int j = 0; j < max_y; ++j) // columns
+                for(int j = 0; j < max_x; ++j) // columns
                 {
                     bool cell_belongs_to_rect{false};
                     // check, if current cell (i,j) is included in rectangle
